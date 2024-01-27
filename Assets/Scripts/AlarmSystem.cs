@@ -1,12 +1,12 @@
+using System.Collections;
 using UnityEngine;
 
 [RequireComponent(typeof(AudioSource))]
 public class AlarmSystem : MonoBehaviour
 {
-    [SerializeField] private float _volumeGrowth;
+    [SerializeField] private float _volumeChange;
 
     private AudioSource _audioSource;
-    private bool _isAlarm;
 
     private void Awake()
     {
@@ -14,42 +14,25 @@ public class AlarmSystem : MonoBehaviour
         _audioSource.volume = 0f;
     }
 
-    private void Update()
+    public IEnumerator IncreaseSmoothly()
     {
-        AlarmValidate();
-    }
+        float volumMaxValue = 1;
 
-    private void OnTriggerEnter2D(Collider2D other)
-    {
-        if (other.gameObject.TryGetComponent(out Bandit bandit))
+        while (_audioSource.volume < volumMaxValue)
         {
-            _audioSource.Play();
-            _isAlarm = true;
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, volumMaxValue, _volumeChange * Time.deltaTime);
+            yield return null;
         }
     }
 
-    private void OnTriggerExit2D(Collider2D other)
+    public IEnumerator DecreaseSmoothly()
     {
-        if (other.gameObject.TryGetComponent(out Bandit bandit))
-        {
-            _isAlarm = false;
-        }
-    }
+        float volumMinValue = 0f;
 
-    private void AlarmValidate()
-    {
-        if(_isAlarm)
+        while (_audioSource.volume > volumMinValue)
         {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, 1, _volumeGrowth*Time.deltaTime);
-        }
-        else if(_isAlarm == false && _audioSource.volume > 0)
-        {
-            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, 0, _volumeGrowth*Time.deltaTime);
-
-            if(_audioSource.volume <= 0 ) 
-            {
-                _audioSource.Stop();
-            }
+            _audioSource.volume = Mathf.MoveTowards(_audioSource.volume, volumMinValue, _volumeChange * Time.deltaTime);
+            yield return null;
         }
     }
 }

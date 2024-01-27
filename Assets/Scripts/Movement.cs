@@ -1,6 +1,7 @@
 using UnityEngine;
 
 [RequireComponent(typeof(Animator))]
+[RequireComponent(typeof(SpriteRenderer))]
 public class Movement : MonoBehaviour
 {
     private const string Horizontal = nameof(Horizontal);
@@ -9,6 +10,7 @@ public class Movement : MonoBehaviour
 
     private Animator _animator;
     private SpriteRenderer _spriteRenderer;
+    private int IsRunning = Animator.StringToHash(nameof(IsRunning));
 
     private void Awake()
     {
@@ -29,16 +31,16 @@ public class Movement : MonoBehaviour
         if (direction > 0)
         {
             _spriteRenderer.flipX = true;
-            _animator.SetBool("IsRunning", true);
+            _animator.SetBool(IsRunning, true);
         }
         else if (direction < 0)
         {
             _spriteRenderer.flipX = false;
-            _animator.SetBool("IsRunning", true);
+            _animator.SetBool(IsRunning, true);
         }
         else
         {
-            _animator.SetBool("IsRunning", false);
+            _animator.SetBool(IsRunning, false);
         }
 
         transform.Translate(distance * Vector2.right);
